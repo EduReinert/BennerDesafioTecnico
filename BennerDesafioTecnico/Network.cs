@@ -1,14 +1,14 @@
 public class Network
 {
-    private int numberOfElements;
-    private List<int[]> connectionsList;
-    private Dictionary<int, List<int>> connectionsMap;
-
-    public List<int[]> ConnectionsList
+    private int _numberOfElements;
+    private Dictionary<int, List<int>> _connectionsMap;
+    
+    public Dictionary<int, List<int>> ConnectionsMap
     {
-        get { return connectionsList; }
-        set { connectionsList = value; }
+        get { return _connectionsMap; }
+        set { _connectionsMap = value; }
     }
+    
 
     public Network(int numberOfElements)
     {
@@ -19,13 +19,18 @@ public class Network
                 throw new ArgumentException("Invalid parameter; number must be a positive value (greater than 0)");
             }
 
-            this.numberOfElements = numberOfElements;
-            this.connectionsList = new List<int[]>();
-            this.connectionsMap = new Dictionary<int, List<int>>();
+            _numberOfElements = numberOfElements;
+            _connectionsMap = new Dictionary<int, List<int>>();
+
+            for (int i = 0; i < _numberOfElements; i++)
+            {
+                _connectionsMap[i] = new List<int>();
+            }
         }
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
+            Environment.Exit(1);
         }
     }
 
@@ -37,15 +42,12 @@ public class Network
 
             if (IsDirectConnectionAlreadyEstablished(firstElement, secondElement))
             {
-                throw new Exception($"Connection was already established between values {firstElement} and {secondElement}");
+                throw new Exception($"Connection was already established between values " +
+                                    $"{firstElement} and " + $"{secondElement}");
             }
-
-            int[] connection = { firstElement, secondElement };
-            connectionsList.Add(connection);
             
-            connectionsMap[firstElement].Add(secondElement);
-            connectionsMap[secondElement].Add(firstElement);
-            
+            _connectionsMap[firstElement].Add(secondElement);
+            _connectionsMap[secondElement].Add(firstElement);
         }
         catch (Exception e)
         {
@@ -58,7 +60,6 @@ public class Network
         try
         {
             IsParametersInRange(firstElement, secondElement);
-
             return IsElementsConnected(firstElement, secondElement);
         }
         catch (Exception e)
@@ -74,95 +75,50 @@ public class Network
     // MÉTODOS AUXILIARES
     //
     //
-
+    
     private void IsParametersInRange(int firstElement, int secondElement)
     {
         if (
             (firstElement <= 0 || secondElement <= 0) ||
-            (firstElement > this.numberOfElements || secondElement > this.numberOfElements))
+            (firstElement > _numberOfElements || secondElement > _numberOfElements))
         {
-            throw new ArgumentException($"Invalid parameter; both numbers must be greater than 0 and equal or lower than {this.numberOfElements}");
+            throw new ArgumentException($"Invalid parameter; both numbers must be greater than 0 " +
+                                        $"and equal or lower than {_numberOfElements}");
         }
     }
 
     private bool IsElementsConnected(int firstElement, int secondElement)
     {
-        if (IsDirectConnectionAlreadyEstablished(firstElement, secondElement))
-        {
-            return true;
-        }
-
-        bool firstElementContainConnection = false;
-        bool secondElementContainConnection = false;
-        foreach (int[] connection in connectionsList)
-        {
-            if (connection[0] == firstElement || connection[1] == firstElement)
-            {
-                firstElementContainConnection = true;
-            }
-
-            if (connection[0] == secondElement || connection[1] == secondElement)
-            {
-                secondElementContainConnection = true;
-            }
-        }
-
-        if (firstElementContainConnection || secondElementContainConnection)
-        {
-            return IsElementsConnectedIndirectly(firstElement, secondElement);
-        }
-
-        return false;
+        return IsDirectConnectionAlreadyEstablished(firstElement, secondElement) 
+               || IsElementsConnectedIndirectly(firstElement, secondElement);
     }
 
     private bool IsDirectConnectionAlreadyEstablished(int firstElement, int secondElement)
     {
-        foreach (int[] connection in connectionsList)
+        if (_connectionsMap.ContainsKey(firstElement))
         {
-            if (
-                (connection[0] == firstElement && connection[1] == secondElement) ||
-                (connection[0] == secondElement && connection[1] == firstElement)
-            )
-            {
-                return true;
-            }
+            return _connectionsMap[firstElement].Contains(secondElement);
         }
-
         return false;
     }
 
     private bool IsElementsConnectedIndirectly(int firstElement, int secondElement)
     {
-        List<int> numbersConnectedToFirstElementList = ConnectionsToElement(firstElement);
-        List<int> numbersConnectedToSecondElementList = ConnectionsToElement(secondElement);
+        List<int> checkingList = new List<int>();
+        PopulateCheckingList(firstElement, checkingList);
 
-        foreach (int number in numbersConnectedToFirstElementList)
-        {
-            if (numbersConnectedToSecondElementList.Contains(number))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return checkingList.Contains(secondElement);
     }
 
-    private List<int> ConnectionsToElement(int element)
+    private void PopulateCheckingList(int firstElement, List<int> checkingList)
     {
-        List<int> numbersList = new List<int>();
-
-        foreach (int[] connection in connectionsList)
+        foreach (int number in _connectionsMap[firstElement])
         {
-            if (connection[0] == element)
+            if (!checkingList.Contains(number))
             {
-                numbersList.Add(connection[1]);
-            }
-            else if (connection[1] == element)
-            {
-                numbersList.Add(connection[0]);
+                checkingList.Add(number);
+                PopulateCheckingList(number, checkingList);
             }
         }
-
-        return numbersList;
     }
 }
