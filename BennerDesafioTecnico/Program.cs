@@ -14,6 +14,8 @@ n.Connect(8, 9);
 n.Connect(9, 10);
 n.Connect(10, 11);
 n.Connect(14, 15);
+n.Connect(1, 1);
+n.Connect(2, 2);
 
 //ESPERADO : true 
 Console.WriteLine(n.Query(1, 2));
@@ -26,3 +28,7 @@ Console.WriteLine(n.Query(10, 2));
 Console.WriteLine(n.Query(12, 1));
 Console.WriteLine(n.Query(14, 1));
 Console.WriteLine(n.Query(19, 20));
+// mesmo número, esperado: false
+Console.WriteLine(n.Query(1, 1));
+Console.WriteLine(n.Query(2, 2));
+

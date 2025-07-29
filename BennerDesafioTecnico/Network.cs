@@ -40,6 +40,11 @@ public class Network
         {
             IsParametersInRange(firstElement, secondElement);
 
+            if (firstElement == secondElement)
+            {
+                throw new ArgumentException("Invalid parameter; elements must not be equal");
+            }
+            
             if (IsDirectConnectionAlreadyEstablished(firstElement, secondElement))
             {
                 throw new Exception($"Connection was already established between values " +
@@ -59,6 +64,11 @@ public class Network
     {
         try
         {
+            if (firstElement == secondElement)
+            {
+                throw new ArgumentException("Invalid parameter; elements must not be equal");
+            }
+            
             IsParametersInRange(firstElement, secondElement);
             return IsElementsConnected(firstElement, secondElement);
         }
