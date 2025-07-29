@@ -2,33 +2,29 @@
 
 
 //TESTES
-Network n = new Network(20);
+Network n = new Network(8);
+n.Connect(1, 6);
 n.Connect(1, 2);
-n.Connect(2, 3);
-n.Connect(3, 4);
-n.Connect(4, 5);
-n.Connect(5, 6);
-n.Connect(6, 7);
-n.Connect(7, 8);
-n.Connect(8, 9);
-n.Connect(9, 10);
-n.Connect(10, 11);
-n.Connect(14, 15);
+n.Connect(6, 2);
+n.Connect(2, 4);
+n.Connect(5, 8);
+
+// erro: conexão já existente
+n.Connect(8, 5);
+// erro: conexão com mesmos parâmetros
 n.Connect(1, 1);
-n.Connect(2, 2);
 
 //ESPERADO : true 
+// conexões diretas
 Console.WriteLine(n.Query(1, 2));
-Console.WriteLine(n.Query(2, 3));
-Console.WriteLine(n.Query(1, 4));
-Console.WriteLine(n.Query(4, 10));
-Console.WriteLine(n.Query(10, 2));
+Console.WriteLine(n.Query(8, 5));
+Console.WriteLine(n.Query(1, 6));
+// conexões indiretas
+Console.WriteLine(n.Query(6, 4));
+Console.WriteLine(n.Query(4, 1));
 
 //ESPERADO : false
-Console.WriteLine(n.Query(12, 1));
-Console.WriteLine(n.Query(14, 1));
-Console.WriteLine(n.Query(19, 20));
+Console.WriteLine(n.Query(5, 1));
+Console.WriteLine(n.Query(3, 7));
 // mesmo número, esperado: false
 Console.WriteLine(n.Query(1, 1));
-Console.WriteLine(n.Query(2, 2));
-

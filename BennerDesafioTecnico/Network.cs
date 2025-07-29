@@ -22,7 +22,7 @@ public class Network
             _numberOfElements = numberOfElements;
             _connectionsMap = new Dictionary<int, List<int>>();
 
-            for (int i = 0; i < _numberOfElements; i++)
+            for (int i = 1; i <= _numberOfElements; i++)
             {
                 _connectionsMap[i] = new List<int>();
             }
@@ -115,19 +115,20 @@ public class Network
     private bool IsElementsConnectedIndirectly(int firstElement, int secondElement)
     {
         List<int> checkingList = new List<int>();
-        PopulateCheckingList(firstElement, checkingList);
+        int initialElement = firstElement;
+        PopulateCheckingList(firstElement, initialElement, checkingList);
 
         return checkingList.Contains(secondElement);
     }
 
-    private void PopulateCheckingList(int firstElement, List<int> checkingList)
+    private void PopulateCheckingList(int firstElement, int initialElement, List<int> checkingList)
     {
         foreach (int number in _connectionsMap[firstElement])
         {
-            if (!checkingList.Contains(number))
+            if (!checkingList.Contains(number) && number != initialElement)
             {
                 checkingList.Add(number);
-                PopulateCheckingList(number, checkingList);
+                PopulateCheckingList(number, initialElement, checkingList);
             }
         }
     }
